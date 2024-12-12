@@ -187,3 +187,9 @@ table.about td {
     height: 64px;
   }
  
+  .custom-code {
+    line-height: normal !important;
+    font-size: 14px !important;
+    min-height: 512px !important;
+    max-height: 1080px !important;
+}
