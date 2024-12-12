@@ -28,8 +28,8 @@ Ce talk est divisé en 4 parties :
     - Gestion du son  
 Conclusion en forme de clin d'œil ;)  
 
-Quelques liens utiles : 
-  • Pour aider au développement sur Super Nintendo, SDK que j'ai créé :  https://github.com/alekmaul/pvsneslib
-  • Discord :  https://discord.gg/DzEFnhB
-  • Mon jeu Super Nintendo commercialisé :  https://www.collectorvision.com/games/sydneycodsnes.php#eur
+Quelques liens utiles :  
+  • Pour aider au développement sur Super Nintendo, SDK que j'ai créé :  https://github.com/alekmaul/pvsneslib  
+  • Discord :  https://discord.gg/DzEFnhB  
+  • Mon jeu Super Nintendo commercialisé :  https://www.collectorvision.com/games/sydneycodsnes.php#eur  
 
