@@ -351,7 +351,7 @@
 
                 <section data-background="assets/images/background-1.jpg" data-transition="slide">
                     <h3>Fonctionnement</h3>
-                    <section>
+                    <section data-transition="slide">
                     <p>Création du fichier SFC pour la SNES</p>
                     <p><img class="large-image" src="assets/images/pvsneslib-2.png"></p>
                     <aside class="notes">
@@ -363,7 +363,7 @@
                             </p>
                     </aside>
                     </section>
-                    <section>
+                    <section data-transition="slide">
                         <p>Pseudo-code du jeu</p>
                         <p align="left">Initialisation de la console</p>
                         <ul>
@@ -381,13 +381,79 @@
                            <p>Voici le pseudo code general du jeu mario développé avec mon kit PVSneslib. Le code source est disponible sur le github de la lib, avec beaucoup d’autres exemples, permettant ainsi à ceux qui veulent essayer le kit , d’avoir de quoi progresser rapidement.</p>
                         </aside>
                     </section>
-                    <section>
-                        <p>Le fichier des ressources</p>
-                        <p><img class="large-image" src="assets/images/pvsneslib-3.png"></p>
+                    <section data-transition="slide">
+                        <p>Définition de la ROM : hdr.asm</p>
+                        <pre><code class="custom-code" data-trim data-line-numbers>
+.MEMORYMAP                    ; Begin describing the system architecture.
+SLOTSIZE $8000                ; The slot is $8000 bytes in size.
+..//..
+.ENDME          ; End MemoryMap definition
+
+.ROMBANKSIZE $8000            ; Every ROM bank is 32 KBytes in size
+.ROMBANKS 8                   ; 2 Mbits - Tell WLA we want to use 8 ROM Banks
+
+.SNESHEADER
+ID "SNES"                     ; 1-4 letter string, just leave it as "SNES"
+NAME "LIBSNES MARIO EXAMPLE"  ; Program Title - can't be over 21 bytes,
+
+SLOWROM
+LOROM
+
+CARTRIDGETYPE $00             ; $00 = ROM only $02 = ROM+SRAM
+ROMSIZE $08                   ; $08 = 2 Mbits
+SRAMSIZE $00                  ; $00 = No Sram, $01 = 16 kbits
+COUNTRY $01                   ; $01 = U.S.  $00 = Japan
+LICENSEECODE $00              ; Just use $00
+VERSION $00                   ; $00 = 1.00, $01 = 1.01, etc.
+.ENDSNES
+
+.SNESNATIVEVECTOR             ; Define Native Mode interrupt vector table
+..//..
+.ENDNATIVEVECTOR
+
+.SNESEMUVECTOR                ; Define Emulation Mode interrupt vector table
+..//..
+.ENDEMUVECTOR
+                            </code></pre>
                         <aside class="notes">
-                            <p>Rentrons maintenant dans le détail des fichiers de ressources.
+                            Rentrons maintenant dans le détail des fichiers de ressources.
                                 Un premier fichier, nommé hdr.asm, présenté sur la droite de votre écran, permet de définir les caractèristiques de la cartouche, comme par exemple, la taille du jeu, s’il utilise de la mémoire RAM nom volatile nommé SRAM, si c’est une cartouche PAL ou NTSC.
-                                Le second, sur la gauche, permet d’ajouter les différents fichiers de ressources, par paquet de 32Ko, nommée section, comme vous pouvez le voir avec les section rodata sur l’écran,
+                        </aside>
+                    </section>
+                    <section data-transition="slide">
+                        <p>Ajout des ressources : data.asm</p>
+                        <pre><code class="custom-code" data-trim data-line-numbers>
+.include "hdr.asm"
+
+.section ".rodata1" superfree
+tileset:
+.incbin "tiles.pic"
+tilesetend:
+tilepal:
+.incbin "tiles.pal"
+mariogfx: .incbin "mario_sprite.pic"
+mariogfx_end:
+mariopal: .incbin "mario_sprite.pal"
+snesfont: .incbin "mariofont.pic"
+snesfont_end:
+snespal: .incbin "mariofont.pal"
+jumpsnd: .incbin "mariojump.brr"
+jumpsndend:
+.ends
+
+.section ".rodata2" superfree
+mapmario:
+.incbin "BG1.m16"
+objmario:
+.incbin "map_1_1.o16"
+tilesetatt:
+.incbin "map_1_1.b16"
+tilesetdef:
+.incbin "map_1_1.t16"
+.ends
+                            </code></pre>
+                        <aside class="notes">
+                                Ce fichier permet d’ajouter les différents fichiers de ressources, par paquet de 32Ko, nommée section, comme vous pouvez le voir avec les section rodata sur l’écran,
                                 Dés fois, la compilation ne passe pas car on dépasse les 32Ko, il faut donc créer de Nouvelles sections pour remttre certains fichiers dedans. 
                                 On peut estimer la taille des sections en regardant la taille des fichiers sous Windows.
                                 </p>
@@ -476,7 +542,6 @@
                         <tr><td><hr></td></tr>
                         <tr><td><i class="fas fa-globe color-website"></i> alekmaulstudio.fr</td></tr>
                         <tr><td><i class="fab fa-github color-github"></i> github.com/alekmaul/</td></tr>
-                        <tr><td><i class="fab fa-twitter color-twitter"></i> @alekmaul</td></tr>
                         <tr><td><i class="fab fa-bluesky color-bluesky"></i> @alekmaul</td></tr>
                         <tr><td><i class="fab fa-facebook color-facebook"></i> Alek Maul</td></tr>
                         <tr><td><i class="fab fa-youtube color-youtube"></i> @alekmaul2009</td></tr>
