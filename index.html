@@ -383,7 +383,7 @@
                     </section>
                     <section data-transition="slide">
                         <p>Définition de la ROM : hdr.asm</p>
-                        <pre><code class="custom-code" data-trim data-line-numbers>
+                        <pre data-id="code-animation"><code class="hljs custom-code" data-trim data-noescape data-line-numbers>
 .MEMORYMAP                    ; Begin describing the system architecture.
 SLOTSIZE $8000                ; The slot is $8000 bytes in size.
 ..//..
@@ -421,8 +421,8 @@ VERSION $00                   ; $00 = 1.00, $01 = 1.01, etc.
                         </aside>
                     </section>
                     <section data-transition="slide">
-                        <p>Ajout des ressources : data.asm</p>
-                        <pre><code class="custom-code" data-trim data-line-numbers>
+                        <p>Les ressources : data.asm</p>
+                        <pre data-id="code-animation"><code class="hljs custom-code" data-trim data-noescape data-line-numbers>
 .include "hdr.asm"
 
 .section ".rodata1" superfree
@@ -451,7 +451,7 @@ tilesetatt:
 tilesetdef:
 .incbin "map_1_1.t16"
 .ends
-                            </code></pre>
+                        </code></pre>
                         <aside class="notes">
                                 Ce fichier permet d’ajouter les différents fichiers de ressources, par paquet de 32Ko, nommée section, comme vous pouvez le voir avec les section rodata sur l’écran,
                                 Dés fois, la compilation ne passe pas car on dépasse les 32Ko, il faut donc créer de Nouvelles sections pour remttre certains fichiers dedans. 
@@ -460,7 +460,54 @@ tilesetdef:
                         </aside>
                     </section>
                     <section>
-                        <p>Les graphiques - la map</p>
+                        <p>Les graphiques - Initialisation</p>
+                        <pre data-id="code-animation"><code class="hljs custom-code" data-trim data-noescape data-line-numbers>
+// Init layer with tiles and init also map length 0x6800 is mandatory for map engine
+bgSetGfxPtr(1, 0x3000);
+bgSetMapPtr(1, 0x6000, SC_32x32);
+bgInitTileSet(0, &tileset, &tilepal, 0, (&tilesetend - &tileset), 16 * 2, BG_16COLORS, 0x2000);
+bgSetMapPtr(0, 0x6800, SC_64x32);
+
+// Init sprite engine (0x0000 for large, 0x1000 for small)
+oamInitDynamicSprite(0x0000, 0x1000, 0, 0, OBJ_SIZE8_L16);
+
+// do some stuffs (see next slide)...
+
+// Now Put in 16 color mode and disable BG3
+setMode(BG_MODE1, 0);
+bgSetDisable(2);
+                        </code></pre>
+                        <p><img class="large-image" src="assets/images/pvsneslib-4.png"></p>
+                        <aside class="notes">
+                            <p>Parlons maintenant code  avec l’affichage du niveau de mario.
+                                On commence par utilizer la function bgInitTileSet qui réalise plusieurs operations en même temps. ‘affectation en mémoire du niveau, de ces tiles et de sa palette,
+                                On définie ensuite l’endroit ou la tilemap se trouvera dans la mêmoire de la rom (0x1000) ainsi que la taille réservée pour son affichage (ici 64 tiles en X et 32 tiles en Y). Ce qui nous pemettra de faire l’effet scrolling du niveau.
+                                Le reste du code, avec le dmaCopyVram permet de remplir la tilemap dans la mémoire écran (nommé Vidéo Ram) avec les bons tiles et de l’afficher sur l’écran.
+                                </p>
+                        </aside>
+                    </section>
+                    <section>
+                        <p>Les graphiques - la carte de jeu</p>
+                        <pre data-id="code-animation"><code class="cpp hljs custom-code" data-trim data-noescape data-line-numbers>
+// Init layer with tiles and init also map length 0x6800 is mandatory for map engine
+...
+
+// do some stuffs (in this slide :) )...
+// Object engine activate
+objInitEngine();
+
+// Init function for state machine
+objInitFunctions(0, &marioinit, &marioupdate, NULL);
+
+// Load all objects into memory
+objLoadObjects((char *)&objmario);
+
+// Load map in memory and update it regarding current location of the sprite
+mapLoad((u8 *)&mapmario, (u8 *)&tilesetdef, (u8 *)&tilesetatt);
+
+// Now Put in 16 color mode and disable BG3
+...
+                        </code></pre>
                         <p><img class="large-image" src="assets/images/pvsneslib-4.png"></p>
                         <aside class="notes">
                             <p>Parlons maintenant code  avec l’affichage du niveau de mario.
