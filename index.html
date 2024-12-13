@@ -492,20 +492,9 @@ bgSetDisable(2);
 // Init layer with tiles and init also map length 0x6800 is mandatory for map engine
 ...
 
-// do some stuffs (in this slide :) )...
-// Object engine activate
-objInitEngine();
-
-// Init function for state machine
-objInitFunctions(0, &marioinit, &marioupdate, NULL);
-
-// Load all objects into memory
-objLoadObjects((char *)&objmario);
-
 // Load map in memory and update it regarding current location of the sprite
 mapLoad((u8 *)&mapmario, (u8 *)&tilesetdef, (u8 *)&tilesetatt);
 
-// Now Put in 16 color mode and disable BG3
 ...
                         </code></pre>
                         <p><img class="large-image" src="assets/images/pvsneslib-4.png"></p>
@@ -530,15 +519,44 @@ mapLoad((u8 *)&mapmario, (u8 *)&tilesetdef, (u8 *)&tilesetatt);
                     </section>
                     <section>
                         <p>Le son</p>
+                        <pre data-id="code-animation"><code class="cpp hljs custom-code" data-trim data-noescape data-line-numbers>
+// Initialize sound engine (take some time)
+spcBoot();
+
+...
+
+// Set give soundbank
+spcSetBank(&SOUNDBANK__);
+
+// allocate around 10K of sound ram (39 256-byte blocks)
+spcAllocateSoundRegion(39);
+
+// Load music
+spcLoad(MOD_OVERWORLD);
+
+...
+
+// Load sample
+spcSetSoundEntry(15, 8, 6, &jumpsndend - &jumpsnd, &jumpsnd, &Jump);
+
+...
+
+// Play music from the beginning
+spcPlay(0);
+
+...
+
+// Play effect
+spcPlaySound(0);
+                        </code></pre>
                         <p><img class="large-image" src="assets/images/pvsneslib-6.png"></p>
                         <aside class="notes">
-                            <p>Concernant le son, on définie la musique avec un outil de type tracker, comme ModPlug Tracker :  https://www.modplug.com/#/
+                            Concernant le son, on définie la musique avec un outil de type tracker, comme ModPlug Tracker :  https://www.modplug.com/#/
                                 <expliquer le format tracker>
                                 Pour le code, il faut d’abord initializer le processeur sonor en lui envoyant du code qui lui permet de comprendre le format tracker IT, par la function spcBoot.
                                 Il va donc stocker dans sa mémoire du code qu’il exécutera pour supporter ce format.
                                 On garde de la mémoire RAM dans ce processeur pour jouer les sons comme par exemple celui de mario quand il saute.
                                 Les deux dernière instructions permettent de charger en mémoire la musique et le son du saut
-                                </p>
                         </aside>
                     </section>
 
